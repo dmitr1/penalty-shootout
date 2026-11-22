@@ -19,7 +19,6 @@ Open `penalty-shootout-hd.html` in a browser. That's it.
 | `penalty-shootout-hd.html` | The game. Code and built-in pictures in one file. |
 | `penalty-shootout-spec.md` | The design spec: rules, difficulty, bosses, assets. Read this first for the "why". |
 | `embed-assets.html` | Browser tool that builds pictures from `assets` into the game file. No installs. |
-| `embed-assets.py` | The same tool as a Python script (needs Python, Pillow and numpy). |
 | `assets/` | Source pictures (not always in the repo). See the names below. |
 
 ## Controls
