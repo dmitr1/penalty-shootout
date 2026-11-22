@@ -1,6 +1,6 @@
-# Penalty Shootout: Game Design Spec (v0.3)
+# Penalty Shootout: Game Design Spec (v0.4)
 
-Prepared for Bryn and the two young game developers, who are building this game together. Status: draft for review before coding starts.
+Prepared for Bryn and the two young game developers, who are building this game together. Status: the game is built and playable, and this spec is updated as it changes.
 
 ## 1. Vision
 
@@ -81,6 +81,13 @@ Each boss gets a name, a costume or monster look, and one signature move. Bryn a
 | 12 | The Titan | A giant robot goalkeeper | Teleports to where you aim, unless you hit green |
 | 15 | Gargoyle Gus | A stone statue that comes to life | Stays frozen until you kick, then slams across the goal |
 
+Boss fight presentation:
+
+- **Intro card:** a boss level opens with a red banner showing "BOSS FIGHT", the boss's name, a one-line description and the boss's picture. It starts the level on a tap or space after a short pause, or by itself after 4 seconds.
+- **Own sounds:** each boss has its own sound for its signature move: Rexo roars, Kraken squelches, Frostbite chimes on his ice kick, the Titan zaps and Gus slams.
+- **Own stadium:** each boss level uses its own stadium picture instead of the standard one.
+- **Boss defeated:** beating a boss shows "BOSS DEFEATED!" with extra confetti, fireworks and a short fanfare.
+
 ## 7. Levels and scoring
 
 - 5 kicks per level. Score 3 or more goals to win it; with fewer than 3 you lose the level and play it again.
@@ -92,8 +99,8 @@ Each boss gets a name, a costume or monster look, and one signature move. Bryn a
 
 - Players choose a national team look, built from that country's flag colours and a simple kit design (stripes, halves, or a plain shirt).
 - No official crests or sponsor logos are used. The team picker names one real player for each team, shown as text only.
-- Teams and players in the team picker: Inter Miami is Lionel Messi, FC Barcelona is Lamine Yamal, and Sweden is Viktor Gyökeres.
-- Starting list: Sweden, Brazil, Argentina, England, Germany, France, Spain, Netherlands, Italy, Japan, USA, Nigeria. This list is easy to extend.
+- Teams and players in the team picker: Inter Miami is Lionel Messi, FC Barcelona is Lamine Yamal, and Sweden is Viktor Gyökeres. Shirt numbers: 10 for Inter Miami and FC Barcelona, 17 for Sweden.
+- In the game now: Inter Miami, FC Barcelona and Sweden. Ideas for later: Brazil, Argentina, England, Germany, France, Spain, Netherlands, Italy, Japan, USA, Nigeria. This list is easy to extend.
 - The kicker's shirt, shorts and socks update on the field and in the profile picker.
 
 ## 9. Screens
@@ -102,25 +109,28 @@ Each boss gets a name, a costume or monster look, and one signature move. Bryn a
 2. **Pick your team.** A grid of team looks.
 3. **Level select or Next level.** Shows progress.
 4. **The pitch.** Goal, keeper, ball, aim target, timing ring and scoreboard.
-5. **Level result.** Win or retry, with confetti on a win.
-6. **Settings.** Music on or off, effects on or off.
+5. **Boss intro.** Boss levels only: the banner with the boss's name, description and picture.
+6. **Level result.** Win or retry, with confetti on a win.
+7. **Settings.** Music on or off, effects on or off.
 
 ## 10. Audio
 
 - **Music:** a looping upbeat tune on the menus and a calmer one during play. All music is created for this game, using simple synthesised tracks, so nothing is borrowed from existing songs.
 - **Sound effects:** ball kick, net ripple, crowd cheer, crowd groan, post hit, whistle, and a keeper save.
+- **Boss sounds:** each boss has its own sound for its signature move, and a short fanfare plays when a boss is beaten.
 - Music and effects have separate on or off switches.
 - Browsers block sound until the first tap, so the first screen asks the player to tap to start.
 
 ## 11. Look and feel
 
 - The long-term goal is a realistic look, like a real football match in a FIFA-style game: a floodlit stadium, a detailed pitch, a roaring crowd, and lifelike players and keepers. Boss keepers are the exception, with their own costumes and monster looks.
-- Version 1 is drawn entirely in code (shapes, gradients and animation), so there are no image files to manage. Version 2 layers in realistic image files for the stadium, players, keepers and boss artwork.
+- The game uses realistic image files for the stadium, pitch, ball, keeper, kickers and bosses. Anything missing is drawn in code, so the game keeps working while images are added one at a time.
 - Short animations: kick, dive, net ripple, confetti.
+- **Kick feedback:** the screen shakes on a save, the ball slows into the net on a goal, the ball leaves a trail (golden on a perfect green shot), and phones vibrate on a goal or a save.
 
 ## 12. Technical approach
 
-- Version 1 is a single HTML file with plain JavaScript and the canvas, with everything drawn in code and the audio synthesised in the browser. Version 2 adds an assets folder for images. No libraries or installs.
+- The game is a single HTML file (penalty-shootout-hd.html) with plain JavaScript and the canvas. The audio is synthesised in the browser, and images are built into the file with embed-assets.html. No libraries or installs.
 - One input system based on pointer events, which covers mouse and touch.
 - The canvas scales to the screen size, in landscape.
 - Profiles and progress are stored in the browser on the device.
@@ -139,9 +149,9 @@ Each boss gets a name, a costume or monster look, and one signature move. Bryn a
 
 Version 2 then swaps the drawn shapes for realistic image files and final boss artwork. Each step of version 1 produces something playable, so the kids can test it and give feedback at every stage.
 
-## 14. Assets (version 2)
+## 14. Assets
 
-The game loads images from an `assets` folder placed next to `penalty-shootout.html`. If an image is missing, the game keeps using the drawn version, so images can be added one at a time and the game never breaks. Status: the code that loads these images is not built yet.
+The game loads images from an `assets` folder placed next to `penalty-shootout-hd.html`. If an image is missing, the game keeps using the drawn version, so images can be added one at a time and the game never breaks. Pictures from the assets folder only show when the game is run from a computer. To make them show on a phone or a shared link, build them into the game file (see below).
 
 | File | What it shows | Notes |
 | --- | --- | --- |
@@ -152,9 +162,9 @@ The game loads images from an `assets` folder placed next to `penalty-shootout.h
 | keeper-stand.png | Goalkeeper facing us, arms spread | Transparent background, vertical 1:2 |
 | keeper-dive-left.png | Goalkeeper in a dive to his left | Transparent background, wide 2:1. The game flips it for the right side |
 
-Later: five boss images (boss-rexo.png, boss-kraken.png, boss-frostbite.png, boss-titan.png, boss-gus.png) and extra keeper poses.
+Boss pictures: boss-rexo.png, boss-kraken.png, boss-frostbite.png, boss-titan.png and boss-gus.png, one standing picture per boss.
 
-Boss dive pictures: each boss can also have a dive picture, drawn diving to the left. The game flips it for dives to the right, as it does for the human keeper, and draws it about half as tall as the boss's standing picture. Until a boss has one, the game tilts its standing picture into the dive.
+Boss dive pictures: each boss can also have a dive picture, drawn diving to the left. The game flips it for dives to the right, as it does for the human keeper, and draws it about 1.35 times as wide as the boss's standing picture is tall. Until a boss has one, the game tilts its standing picture into the dive.
 
 | File | What it shows | Notes |
 | --- | --- | --- |
@@ -164,13 +174,29 @@ Boss dive pictures: each boss can also have a dive picture, drawn diving to the 
 | boss-titan-dive.png | The Titan diving to his left | Transparent background, wide 2:1 |
 | boss-gus-dive.png | Gargoyle Gus diving to his left | Transparent background, wide 2:1 |
 
+Team and stadium pictures:
+
+| File | What it shows | Notes |
+| --- | --- | --- |
+| kicker-miami.png, kicker-barcelona.png, kicker-sweden.png | The team's kicker from behind, standing | Transparent background, vertical 1:2 |
+| kicker-miami-kick.png, kicker-barcelona-kick.png, kicker-sweden-kick.png | The same kicker mid-kick | Transparent background |
+| stadium-rexo-boss.jpeg, stadium-kraken-boss.jpeg, stadium-frostbite-boss.jpeg, stadium-titan-boss.jpeg, stadium-gus-boss.jpeg | A different stadium for each boss level | Wide 16:9, no pitch or goal. Used instead of stadium.jpg on that boss's level; if a file is missing the standard stadium is used |
+
+Building the pictures into the game file:
+
+1. Open embed-assets.html in Chrome or Edge. It runs in the browser, with no installs, and nothing is uploaded.
+2. Choose the game file, then select the pictures from the assets folder.
+3. Click the build button. A new game file downloads with the pictures inside, and the original is untouched. Pictures already in the game stay unless a new one has the same name.
+
+The tool crops each picture to the figure, removes the green edge left by background removal, and shrinks it to the right size.
+
 Rules for all images:
 
 - One style: a photorealistic night match under floodlights, so the pieces match.
 - No logos, text, sponsors or real player likeness. Kits are plain colours.
 - Transparent PNGs: generate on a solid green background (#00ff00), then remove it with a background-remover.
 - Animation comes from code moving, rotating, flipping and swapping still images.
-- The published link cannot load an assets folder, so images only appear when the file is run from a computer, unless they are embedded in the file (up to about 16 MB).
+- The published link cannot load an assets folder, so build the pictures into the game file with embed-assets.html. The file must stay under about 16 MB.
 
 ## 15. Open questions
 

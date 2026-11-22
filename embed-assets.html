@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build images into the game</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--text:#1b2430;--muted:#5b6878;--line:#d5dce6;--accent:#1f7a45;--accent-text:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#10161e;--card:#18212c;--text:#e8eef5;--muted:#9fb0c3;--line:#2c3a4a;--accent:#2ecc71;--accent-text:#08210f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:24px}
+main{max-width:720px;margin:0 auto}
+h1{font-size:26px;margin:0 0 4px}
+p{margin:6px 0;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:16px 0}
+.card h2{font-size:17px;margin:0 0 8px}
+input[type=file]{display:block;width:100%;padding:10px;border:1px dashed var(--line);border-radius:8px;background:transparent;color:var(--text)}
+button{font:inherit;font-weight:600;padding:12px 20px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-text);cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+#log{font:14px/1.6 ui-monospace,Consolas,monospace;white-space:pre-wrap;color:var(--text)}
+.ok{color:var(--accent)}.bad{color:#d64545}
+</style>
+</head>
+<body>
+<main>
+<h1>Build images into the game</h1>
+<p>Packs your pictures into the game file, so the game works on a phone and on a shared link without an assets folder. Everything runs in this page. Nothing is uploaded. Use Chrome or Edge.</p>
+
+<div class="card">
+<h2>1. Choose the game file</h2>
+<input type="file" id="game" accept=".html">
+</div>
+
+<div class="card">
+<h2>2. Choose the pictures</h2>
+<p>Open your assets folder, select all the pictures you want built in (Ctrl+A, or Cmd+A on a Mac) and choose them here. Pictures already in the game stay unless you pick a new one with the same name.</p>
+<input type="file" id="imgs" accept="image/*" multiple>
+</div>
+
+<div class="card">
+<h2>3. Build</h2>
+<button id="go" disabled>Build the game file</button>
+<div id="log" style="margin-top:12px"></div>
+</div>
+</main>
+
+<script>
+const $=id=>document.getElementById(id),log=(t,c)=>{const d=document.createElement('div');if(c)d.className=c;d.textContent=t;$('log').appendChild(d)};
+const upd=()=>{$('go').disabled=!($('game').files.length&&$('imgs').files.length)};
+$('game').onchange=$('imgs').onchange=upd;
+
+// biggest size (width, height) we keep for each kind of picture
+function limits(n){
+  if(n.startsWith('kicker'))return n.endsWith('-kick')?[400,280]:[400,330];
+  if(n.startsWith('boss'))return n.endsWith('-dive')?[400,300]:[363,320];
+  if(n.startsWith('keeper'))return[600,300];
+  if(n==='ball')return[96,96];
+  return[1600,900]; // stadium, pitch, goal
+}
+
+async function prepare(file,name){
+  const bmp=await createImageBitmap(file);
+  let c=document.createElement('canvas');c.width=bmp.width;c.height=bmp.height;
+  let x=c.getContext('2d',{willReadFrequently:true});x.drawImage(bmp,0,0);
+  const w=c.width,h=c.height,img=x.getImageData(0,0,w,h),d=img.data;
+  let transparent=false;for(let i=3;i<d.length;i+=4)if(d[i]<250){transparent=true;break}
+  if(transparent){
+    // crop to the figure
+    let x0=w,y0=h,x1=-1,y1=-1;
+    for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++)if(d[(yy*w+xx)*4+3]>20){if(xx<x0)x0=xx;if(xx>x1)x1=xx;if(yy<y0)y0=yy;if(yy>y1)y1=yy}
+    if(x1>=0){
+      // remove the green fringe left by background removal: only near the edge of the figure
+      const solid=new Uint8Array(w*h);for(let i=0;i<w*h;i++)solid[i]=d[i*4+3]>200?1:0;
+      const R=3,tmp=new Uint8Array(w*h),er=new Uint8Array(w*h);
+      for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){let m=1;for(let k=-R;k<=R&&m;k++){const q=xx+k;if(q<0||q>=w||!solid[yy*w+q])m=0}tmp[yy*w+xx]=m}
+      for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){let m=1;for(let k=-R;k<=R&&m;k++){const q=yy+k;if(q<0||q>=h||!tmp[q*w+xx])m=0}er[yy*w+xx]=m}
+      for(let i=0;i<w*h;i++){const o=i*4;if(!er[i]){const cap=Math.max(d[o],d[o+2]);if(d[o+1]>cap)d[o+1]=cap}if(d[o+3]<12)d[o+3]=0}
+      x.putImageData(img,0,0);
+      const cw=x1-x0+1,ch=y1-y0+1,c2=document.createElement('canvas');c2.width=cw;c2.height=ch;
+      c2.getContext('2d').drawImage(c,x0,y0,cw,ch,0,0,cw,ch);c=c2;
+    }
+  }
+  const[mw,mh]=limits(name),k=Math.min(mw/c.width,mh/c.height,1);
+  if(k<1){
+    const c3=document.createElement('canvas');c3.width=Math.round(c.width*k);c3.height=Math.round(c.height*k);
+    const x3=c3.getContext('2d');x3.imageSmoothingQuality='high';x3.drawImage(c,0,0,c3.width,c3.height);c=c3;
+  }
+  const url=c.toDataURL('image/webp',0.82);
+  if(!url.startsWith('data:image/webp'))throw new Error('this browser cannot make WebP pictures. Use Chrome or Edge');
+  return url;
+}
+
+$('go').onclick=async()=>{
+  $('log').textContent='';$('go').disabled=true;
+  try{
+    const gf=$('game').files[0],text=await gf.text(),m=text.match(/const EMBED=(\{[\s\S]*?\});/);
+    if(!m)throw new Error('could not find the picture list in '+gf.name+'. Is this the game file?');
+    const embed=JSON.parse(m[1]);let n=0;
+    for(const f of $('imgs').files){
+      const name=f.name.replace(/\.[^.]+$/,'');
+      try{embed[name]=await prepare(f,name);n++;log(name.padEnd(30)+Math.round(embed[name].length/1000)+' KB','ok')}
+      catch(e){log(f.name+': '+e.message,'bad')}
+    }
+    if(!n)throw new Error('no pictures could be built in');
+    const out=text.slice(0,m.index)+'const EMBED='+JSON.stringify(embed)+';'+text.slice(m.index+m[0].length);
+    const blob=new Blob([out],{type:'text/html'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download=gf.name;document.body.appendChild(a);a.click();a.remove();
+    log('Done: '+Object.keys(embed).length+' pictures are built into '+gf.name+' ('+Math.round(out.length/1000)+' KB). The new file was downloaded; your original is untouched.','ok');
+  }catch(e){log('Error: '+e.message,'bad')}
+  $('go').disabled=false;
+};
+</script>
+</body>
+</html>
