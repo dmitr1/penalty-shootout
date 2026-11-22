@@ -1,6 +1,6 @@
 # Penalty Shootout
 
-A football penalty-shootout game that runs in the browser on laptop and phone. You are the kicker and the computer is the goalkeeper. Each level has 5 kicks and you need 3 goals to clear it. Every third level is a boss fight. Built by Bryn and two young developers, with English and Swedish text.
+A football penalty-shootout game that runs in the browser on laptop and phone. You are the kicker and the computer is the goalkeeper. Each level has 5 kicks and you need 3 goals to clear it. Every third level is a boss fight. Built by Bryn and two young lads (Maxim and Miles), with English and Swedish text.
 
 The whole game is one HTML file with plain JavaScript and a canvas. There are no libraries, no build step and no server.
 
