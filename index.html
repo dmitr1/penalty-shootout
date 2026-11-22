@@ -43,9 +43,9 @@ function setLang(l){LANG=l;T=TEXT[l];try{localStorage.setItem('lang',l)}catch(e)
 
 // ===== TEAMS — kit colors only, no real crests or logos. Add a team by copying one line! =====
 const TEAMS=[
- {id:'miami',    player:'Lionel Messi', shirt:['#f6a9c6'],          trim:'#1d1d1f', shorts:'#1d1d1f', socks:'#f6a9c6', num:'#1d1d1f'},
- {id:'barcelona',player:'Lamine Yamal', shirt:['#a50044','#004d98'],trim:'#edbb00', shorts:'#004d98', socks:'#a50044', num:'#edbb00'},
- {id:'sweden', player:'Viktor Gyökeres', shirt:['#fecc00'],          trim:'#006aa7', shorts:'#006aa7', socks:'#fecc00', num:'#006aa7'}];
+ {id:'miami',    player:'Lionel Messi', no:'10', shirt:['#f6a9c6'],          trim:'#1d1d1f', shorts:'#1d1d1f', socks:'#f6a9c6', num:'#1d1d1f'},
+ {id:'barcelona',player:'Lamine Yamal', no:'10', shirt:['#a50044','#004d98'],trim:'#edbb00', shorts:'#004d98', socks:'#a50044', num:'#edbb00'},
+ {id:'sweden', player:'Viktor Gyökeres', no:'17', shirt:['#fecc00'],          trim:'#006aa7', shorts:'#006aa7', socks:'#fecc00', num:'#006aa7'}];
 let teamIdx=0;try{teamIdx=Math.max(0,TEAMS.findIndex(t=>t.id===localStorage.getItem('team')))}catch(e){}
 if(TEAMS[teamIdx].soon)teamIdx=0;
 const team=()=>TEAMS[teamIdx];
@@ -64,7 +64,7 @@ function drawShirtIcon(t,cx,cy,k){g.save();g.shadowColor='rgba(0,0,0,.5)';g.shad
  g.save();shirtPath(cx,cy,k);g.clip();kitFill(t,cx-60*k,cy-40*k,120*k,86*k);g.restore();
  g.strokeStyle=t.trim;g.lineWidth=3*k;shirtPath(cx,cy,k);g.stroke();
  g.beginPath();g.moveTo(cx-22*k,cy-38*k);g.quadraticCurveTo(cx,cy-26*k,cx+22*k,cy-38*k);g.lineWidth=5*k;g.stroke();
- g.font=Math.round(34*k)+'px "Russo One",Impact,sans-serif';g.textAlign='center';g.fillStyle=t.num;g.fillText('10',cx,cy+22*k)}
+ g.font=Math.round(34*k)+'px "Russo One",Impact,sans-serif';g.textAlign='center';g.fillStyle=t.num;g.fillText(t.no,cx,cy+22*k)}
 function drawTeamPicker(now){
  g.fillStyle='rgba(5,10,18,.72)';g.fillRect(0,0,W,H);
  txt(T.pickTeam,W/2,120,46,'#fff');
@@ -112,7 +112,7 @@ function drawKicker(now){
  g.save();g.beginPath();g.moveTo(-26,-124+bob);g.quadraticCurveTo(0,-132+bob,26,-124+bob);g.lineTo(23,-64+bob);g.lineTo(-23,-64+bob);g.closePath();g.clip();
  kitFill(t,-27,-132+bob,54,70);g.restore();
  g.strokeStyle=t.trim;g.lineWidth=3;g.beginPath();g.moveTo(-10,-128+bob);g.quadraticCurveTo(0,-125+bob,10,-128+bob);g.stroke();
- g.font='30px "Russo One",Impact,sans-serif';g.textAlign='center';g.fillStyle=t.num;g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=1;g.fillText('10',0,-80+bob);g.strokeText('10',0,-80+bob);
+ g.font='30px "Russo One",Impact,sans-serif';g.textAlign='center';g.fillStyle=t.num;g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=1;g.fillText(t.no,0,-80+bob);g.strokeText(t.no,0,-80+bob);
  // neck + head (back of head, hair)
  g.fillStyle='#b97f5a';g.fillRect(-5,-138+bob,10,10);
  const hg=g.createRadialGradient(-4,-154+bob,2,0,-150+bob,14);hg.addColorStop(0,'#5a3a22');hg.addColorStop(1,'#1e120a');
